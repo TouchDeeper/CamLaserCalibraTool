@@ -4,8 +4,8 @@
 savePath: "/home/hyj/all_ros_ws/LaserCamCal_ws/src/log/"
 bag_path: "/home/hyj/all_ros_ws/LaserCamCal_ws/src/2019-07-12-11-36-17.bag"
 
-scan_topic_name: "/scan"
-img_topic_name: "/mynteye/left/image_raw"
+scan_topic_name: "/front/scan"
+img_topic_name: "/camera/rgb/image_raw"
 
 # tag info
 tag_type: 2 # 1: kalibr_tag, 2: apriltag
@@ -16,7 +16,7 @@ black_border: 1 # if you use kalibr_tag black_boarder = 2; if you use apriltag b
 #camera calibration 
 model_type: PINHOLE
 camera_name: camera
-image_width: 752
+image_width: 640
 image_height: 480
 
 distortion_parameters:

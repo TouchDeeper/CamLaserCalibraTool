@@ -38,6 +38,7 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
 //        std::cout << points.at(id).transpose() <<" "<<points.at(id+1).transpose() <<std::endl;
     // 假设每个激光点之间的夹角为0.3deg,
     // step 1: 如果有激光标定板，那么激光标定板必须出现在视野的正前方 120 deg 范围内(通常相机视野也只有 120 deg)，也就是左右各 60deg.
+    //??? modify 0.3, why 80
     int delta = 80/0.3;
 
     int id_left = std::min( id + delta, n-1);
@@ -54,6 +55,7 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
     int nextPt = currentPt + skip;
     bool newSeg = true;
     LineSeg seg;
+    //??? left right
     for (int i = id_right; i < id_left - skip; i += skip) {
 
         if(newSeg)
@@ -62,7 +64,7 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
             seg.id_end = nextPt;
             newSeg = false;
         }
-
+        //TODO use range value
         double d1 = points.at(currentPt).head(2).norm();
         double d2 = points.at(nextPt).head(2).norm();
         double range_max = 100;

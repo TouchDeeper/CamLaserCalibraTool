@@ -1,5 +1,5 @@
 <launch>
-  <arg name="config_path" default = "$(find lasercamcal_ros)/config/calibra_config.yaml" />
+  <arg name="config_path" default = "$(find lasercamcal_ros)/config/calibra_config_fisheye.yaml" />
 
 
   <node pkg="lasercamcal_ros" type="showscan_node" name="showscan_node" output="screen">

@@ -39,10 +39,12 @@ void GenerateSimData( std::vector<Oberserve>& obs)
 ////////////////////////////// Try it!!! You will find the treasure /////////////////////////////////////////////////////////////////    
     // You can try rotating the calibration plate around the camera's different axes to see the observability of the system.
     // rotate all axis
-    Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitZ())
-        *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY())
-        *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
+//    Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitZ())
+//        *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY())
+//        *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
 
+    //only translation
+    Rca = Eigen::Matrix3d::Identity();
     // Try me!!! remove yaw, you will find that the system observability is not affected by Z-axis
     // Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY())
     //     *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());

@@ -1,0 +1,31 @@
+%YAML:1.0
+
+#common parameters
+savePath: "/home/wang/imta_project/LaserCameraCal_ws/src/output/"
+bag_path: "/media/wang/File/dataset/hyj_cali_laser_cam/cali_cam_laser6.bag"
+
+scan_topic_name: "/scan"
+img_topic_name: "/camera/fisheye1/image_raw"
+
+# tag info
+tag_type: 1 # 1: kalibr_tag, 2: apriltag
+tag_size: 0.06 # tag size, unit meter
+tag_spacing: 0.3 # tag spacing, only used in kalibr_tag. For details, please see kalibr tag description.
+black_border: 2 # if you use kalibr_tag black_boarder = 2; if you use apriltag black_boarder = 1
+ 
+#camera calibration 
+model_type: KANNALA_BRANDT
+camera_name: cam0
+image_width: 848
+image_height: 800
+
+projection_parameters:
+   mu: 288.03113837228807
+   mv: 288.2964766776069
+   u0: 420.3999640553491
+   v0: 395.05186980787374
+   k2: 0.003598587568152557
+   k3: 0.01853991048490219
+   k4: -0.004391882415095654
+   k5: -0.009998750559241121
+
