@@ -217,6 +217,7 @@ void CamLaserCalibration(const std::vector<Oberserve> obs, Eigen::Matrix4d &Tcl,
     ceres::Problem problem;
     Eigen::VectorXd pose(7);
     pose << Tcl(0,3),Tcl(1,3),Tcl(2,3),q.x(),q.y(),q.z(), q.w();
+//    pose << Tcl(0,3),Tcl(1,3),0.8,q.x(),q.y(),q.z(), q.w();
 
 
     for(size_t i = 0; i< obs.size(); ++i)
@@ -376,6 +377,8 @@ void CamLaserCalibration(const std::vector<Oberserve> obs, Eigen::Matrix4d &Tcl,
         std::cout << "====== null space basis, it's means the unobservable direction for Tcl ======" <<std::endl;
         std::cout << "       please note the unobservable direction is for Tcl, not for Tlc        " <<std::endl;
         std::cout<< svd.matrixV().rightCols(n) <<std::endl;
+    }else{
+        std::cout<< svd.matrixV() <<std::endl;
     }
     
     std::cout <<"\nrecover chi2: " <<chi / 2. << std::endl;

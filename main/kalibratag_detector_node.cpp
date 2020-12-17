@@ -205,8 +205,10 @@ int main(int argc, char **argv){
     std::ofstream foutC(file.c_str(), std::ios::app);
     foutC.setf(std::ios::fixed, std::ios::floatfield);
     foutC.precision(9);
+
     for (rosbag::MessageInstance const m: views)
     {
+        i++;
       if (m.getTopic() == img_topic_name)
       {
         sensor_msgs::ImageConstPtr img = m.instantiate<sensor_msgs::Image>();

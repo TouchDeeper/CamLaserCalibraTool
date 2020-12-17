@@ -6,7 +6,27 @@
 #include "calcCamPose.h"
 #include "LaseCamCalCeres.h"
 
+void addNoise(Eigen::Quaterniond& q, Eigen::Vector3d& t, std::vector< Eigen::Vector3d>& points){
+    std::random_device rd;
+    std::default_random_engine generator(rd());
+    std::uniform_real_distribution<double> rpy_noise_rand(-0.01 , 0.01);
+    std::uniform_real_distribution<double> xyz_noise_rand(-0.1, 0.1);
+    std::uniform_real_distribution<double> points_noise_rand(-0.1, 0.1);
+    Eigen::Matrix3d rpy_noise;
+    rpy_noise = Eigen::AngleAxisd(rpy_noise_rand(generator),Eigen::Vector3d::UnitZ())
+    *Eigen::AngleAxisd(rpy_noise_rand(generator),Eigen::Vector3d::UnitY())
+    *Eigen::AngleAxisd(rpy_noise_rand(generator),Eigen::Vector3d::UnitX());
 
+    q = q*Eigen::Quaterniond(rpy_noise);
+
+    t =  (t + Eigen::Vector3d(xyz_noise_rand(generator),xyz_noise_rand(generator),xyz_noise_rand(generator))).eval();
+
+    for(int i=0;i<points.size();i++){
+        points[i] = (points[i] + Eigen::Vector3d(xyz_noise_rand(generator),xyz_noise_rand(generator),xyz_noise_rand(generator))).eval();
+    }
+
+
+}
 void GenerateSimData( std::vector<Oberserve>& obs)
 {
 
@@ -16,14 +36,19 @@ void GenerateSimData( std::vector<Oberserve>& obs)
   Rlc << 0 , 0 , 1,
         -1 , 0 , 0,
         0 , -1 , 0;
+
   Eigen::Quaterniond qlc(Rlc);              
   Eigen::Vector3d tlc(0.1, 0.2, 0.3);
+//  Eigen::Vector3d tlc(-0.48, 0.125, 0.867);
 
   std::cout << "============= Ground Truth of Rotation and translation: Rlc, tlc =============== " << std::endl;
   std::cout << Rlc << std::endl;
   std::cout << tlc << std::endl;
   std::cout << "============= End =============== " << std::endl;
-
+    std::cout << "============= Ground Truth of Rotation and translation: Rcl, tcl =============== " << std::endl;
+    std::cout << Rlc.transpose() << std::endl;
+    std::cout << -Rlc.transpose()*tlc << std::endl;
+    std::cout << "============= End =============== " << std::endl;
   std::random_device rd;
   std::default_random_engine generator(rd());
   // random CamPose distribution
@@ -44,21 +69,22 @@ void GenerateSimData( std::vector<Oberserve>& obs)
 //        *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
 
     //only translation
-    Rca = Eigen::Matrix3d::Identity();
+//    Rca = Eigen::Matrix3d::Identity();
     // Try me!!! remove yaw, you will find that the system observability is not affected by Z-axis
-    // Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY())
-    //     *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
+//     Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY())
+//         *Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
       
     // Try me!!! ONLY pitch, Wow!!!! you will find we can not estimate the tlc.z() 
-    // Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY());
+//     Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitY());
 
     // Try me!!! ONLY roll
-    // Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
+     Rca = Eigen::AngleAxisd(rpy_rand(generator),Eigen::Vector3d::UnitX());
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-    Eigen::Vector3d tca(xy_rand(generator),xy_rand(generator), z_rand(generator));
-    // Eigen::Vector3d tca(0,0, z_rand(generator));
+//    Eigen::Vector3d tca(xy_rand(generator),xy_rand(generator), z_rand(generator));
+//    Eigen::Vector3d tca(xy_rand(generator),xy_rand(generator), 1);
+     Eigen::Vector3d tca(1,1, 1);
     Eigen::Quaterniond qca(Rca);
 
     Eigen::Quaterniond qla(Rlc * Rca);
@@ -82,7 +108,7 @@ void GenerateSimData( std::vector<Oberserve>& obs)
     {
       double theta = -M_PI_2 + j * M_PI/180;
       Eigen::Vector3d ray(cos(theta), sin(theta), 0);
-      double depth = -d/(ray.dot(n));
+      double depth = -d/(ray.dot(n));//laser beam length
       
       if( std::isnan(depth) || depth < 0)
         continue;
@@ -96,7 +122,7 @@ void GenerateSimData( std::vector<Oberserve>& obs)
       }
       // std::cout << p.transpose() << std::endl;
     }
-
+    addNoise(qca, tca, points);
     Oberserve ob;
     ob.tagPose_Qca = qca;
     ob.tagPose_tca = tca;
@@ -131,6 +157,9 @@ int main(int argc, char **argv){
   Eigen::Matrix4d Tcl = Tlc_initial.inverse();
   CamLaserCalibration(obs,Tcl, false);   // refine results by non-linear optimiztion
   //CamLaserCalibration(obs,Tcl, true);
+
+    std::cout << "\n----- Transform from Laser to Camera Tcl is: -----\n"<<std::endl;
+    std::cout<< Tcl <<std::endl;
 
   std::cout << "\n----- Transform from Camera to Laser Tlc is: -----\n"<<std::endl;
   Eigen::Matrix4d Tlc = Tcl.inverse();

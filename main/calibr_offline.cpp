@@ -76,9 +76,12 @@ int main(int argc, char **argv){
     }
   }
   tagpose = sparseTagpose;
+  std::cout<<"sparseTagpose size = "<<tagpose.size()<<std::endl;
 
   // 准备标定数据
   std::vector<Oberserve> obs;
+
+
   // 处理激光数据
   int ii_cnt = 10;
   for(rosbag::MessageInstance const m: views){
@@ -92,10 +95,12 @@ int main(int argc, char **argv){
 //      if(ii_cnt % 20 != 0) continue;
 
       double timestamp = scan->header.stamp.toSec();
+//      std::cout<<"new scan time = "<<timestamp<<std::endl;
       std::vector<Eigen::Vector3d> points;
 
-      points = AutoGetLinePts(Points);
-
+      std::cout<<"Points size = "<<Points.size()<<std::endl;
+      points = AutoGetLinePts(Points, false);
+      std::cout<<"line points size = "<<points.size()<<std::endl;
       // 检测到了直线
       if(points.size() > 0)
       {
@@ -104,6 +109,7 @@ int main(int argc, char **argv){
         CamPose colsetTagPose;
         for (int i = 0; i < tagpose.size(); ++i) {
           CamPose tmp = tagpose.at(i);
+//          std::cout<<"image time = "<<std::endl;
           double t = fabs(tmp.timestamp - timestamp);
           if(t < min_dt)
           {
@@ -112,12 +118,12 @@ int main(int argc, char **argv){
           }
         }
 
-
-        if(min_dt < 0.02)  // 20ms
+//        ROS_INFO("min delta time = %f", min_dt);
+        if(min_dt < 0.04)  // 20ms
         {
 
-//          std::cout << "scan and tag time: "<<std::fixed<<std::setprecision(18)
-//                    <<timestamp<<" "<<colsetTagPose.timestamp<<std::endl;
+          std::cout << "scan and tag time: "<<std::fixed<<std::setprecision(18)
+                    <<timestamp<<" "<<colsetTagPose.timestamp<<std::endl;
           /////////////////////////////////////////////////
 
           Eigen::Vector2d line;
@@ -157,7 +163,7 @@ int main(int argc, char **argv){
 
   if(obs.size() < 5)
   {
-    std::cout << "Valid Calibra Data Less"<<std::endl;
+    std::cout << "Valid Calibra Data Less : "<<obs.size()<<std::endl;
     bag_input.close();
     return 0;
   }
@@ -167,7 +173,7 @@ int main(int argc, char **argv){
   CamLaserCalClosedSolution(obs,Tlc_initial);
 
   Eigen::Matrix4d Tcl = Tlc_initial.inverse();
-  CamLaserCalibration(obs,Tcl, false);
+  CamLaserCalibration(obs,Tcl, true,true);
   // CamLaserCalibration(obs,Tcl, true);
 
   std::cout << "\n----- Transform from Camera to Laser Tlc is: -----\n"<<std::endl;

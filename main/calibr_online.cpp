@@ -227,8 +227,8 @@ int main(int argc, char **argv){
           }
         }
 
-        std::cout << "scan and tag time: "<<std::fixed<<std::setprecision(18)
-                  <<timestamp<<" "<<colsetTagPose.timestamp<<std::endl;
+//        std::cout << "scan and tag time: "<<std::fixed<<std::setprecision(18)
+//                  <<timestamp<<" "<<colsetTagPose.timestamp<<std::endl;
         if(min_dt < 0.02)  // 20ms
         {
           /////////////////////////////////////////////////

@@ -1,17 +1,17 @@
 %YAML:1.0
 
 #common parameters
-savePath: "/home/hyj/all_ros_ws/LaserCamCal_ws/src/log/"
-bag_path: "/home/hyj/all_ros_ws/LaserCamCal_ws/src/2019-07-12-11-36-17.bag"
+savePath: "/home/wang/imta_project/LaserCameraCal_ws/src/output/"
+bag_path: "/home/wang/imta_project/BetaGo/BetaGo_ws/src/betago_calibration/calib_raw_data/cam_laser/image_scan.bag"
 
 scan_topic_name: "/front/scan"
 img_topic_name: "/camera/rgb/image_raw"
 
 # tag info
-tag_type: 2 # 1: kalibr_tag, 2: apriltag
-tag_size: 0.165 # tag size, unit meter
+tag_type: 1 # 1: kalibr_tag, 2: apriltag
+tag_size: 0.088 # tag size, unit meter
 tag_spacing: 0.3 # tag spacing, only used in kalibr_tag. For details, please see kalibr tag description:https://github.com/ethz-asl/kalibr/wiki/calibration-targets#a-aprilgrid
-black_border: 1 # if you use kalibr_tag black_boarder = 2; if you use apriltag black_boarder = 1
+black_border: 2 # if you use kalibr_tag black_boarder = 2; if you use apriltag black_boarder = 1
 
 #camera calibration 
 model_type: PINHOLE
@@ -26,8 +26,8 @@ distortion_parameters:
    p2: 0.0
 
 projection_parameters:
-   fx: 367.049931000148
-   fy: 366.94446918887405
-   cx: 368.7202381120387
-   cy: 241.13814795878562
+   fx: 554.1572960289803
+   fy: 554.5168507779575
+   cx: 318.6985179756397
+   cy: 239.35673009995907
 

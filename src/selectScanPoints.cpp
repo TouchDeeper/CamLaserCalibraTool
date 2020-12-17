@@ -36,10 +36,10 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
     int n = points.size();
     int id = n/2;
 //        std::cout << points.at(id).transpose() <<" "<<points.at(id+1).transpose() <<std::endl;
-    // 假设每个激光点之间的夹角为0.3deg,
+    // 假设每个激光点之间的夹角为0.3deg,这个值可以通过ros的激光数据的angle increment算出
     // step 1: 如果有激光标定板，那么激光标定板必须出现在视野的正前方 120 deg 范围内(通常相机视野也只有 120 deg)，也就是左右各 60deg.
-    //??? modify 0.3, why 80
-    int delta = 80/0.3;
+    //80是假设线段在左右各80度的范围内
+    int delta = 80/0.3757; //betago: 0.3757, hyj:0.3
 
     int id_left = std::min( id + delta, n-1);
     int id_right = std::max( id - delta , 0);
@@ -55,7 +55,7 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
     int nextPt = currentPt + skip;
     bool newSeg = true;
     LineSeg seg;
-    //??? left right
+
     for (int i = id_right; i < id_left - skip; i += skip) {
 
         if(newSeg)
@@ -70,12 +70,15 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
         double range_max = 100;
         if(d1 < range_max && d2 < range_max)    // 有效数据,  激光小于 100 m
         {
-            if(fabs(d1-d2) < dist_thre)  //  8cm
+//            std::cout<<"within range point"<<std::endl;
+            if(fabs(d1-d2) < dist_thre)  //  5cm
             {
+//                std::cout<<"   expand next"<<std::endl;
                 seg.id_end = nextPt;
 
             } else
             {
+//                std::cout<<"   new seg"<<std::endl;
                 newSeg = true;
                 Eigen::Vector3d dist = points.at(seg.id_start) - points.at(seg.id_end);
                 if(dist.head(2).norm() > 0.2
@@ -184,7 +187,7 @@ std::vector< Eigen::Vector3d > AutoGetLinePts(const std::vector<Eigen::Vector3d>
         cv::putText(img, "Detecting the Laser Points on the calibra planar!",
                     cvPoint(5,30), cv::FONT_HERSHEY_COMPLEX_SMALL, 0.7, cvScalar(255,255,255), 1, CV_AA);
         cv::imshow("ScanPoint",img);
-        cv::waitKey(10);
+        cv::waitKey(0);
     }
 
     return ptsLine;

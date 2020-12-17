@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/Image.h>
 
@@ -111,6 +112,11 @@ namespace sc
             cv::circle(img_src, pixel[j],1, cv::Scalar(0,255,0),1);
         }
         cv::imshow("show", img_src);
+        std::string name = std::to_string(image_in->header.stamp.toSec());
+        std::string path = ros::package::getPath("lasercamcal_ros");
+        path = path + "/../output/image/" + name + ".png";
+        if(!cv::imwrite(path.c_str(),img_src))
+            ROS_INFO("can not write %s", path.c_str());
         cv::waitKey(10);
     }
 
